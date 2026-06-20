@@ -117,28 +117,37 @@ def process_files(dcard_file, lrs_file, upi_file):
     lrs_df = standardize_dataframe(lrs_df)
     upi_df = standardize_dataframe(upi_df)
 
-    # Merge
-    all_data = pd.concat([
-        dcard_df,
-        lrs_df,
-        upi_df
-    ], ignore_index=True)
+    # Merge all files
+    all_data = pd.concat(
+        [dcard_df, lrs_df, upi_df],
+        ignore_index=True
+    )
 
     # Validation
-    all_data["Error"] = all_data.apply(validate_row, axis=1)
+    all_data["Error"] = all_data.apply(
+        validate_row,
+        axis=1
+    )
 
     # Error records
-    error_df = all_data[all_data["Error"] != ""]
+    error_df = all_data[
+        all_data["Error"] != ""
+    ]
 
     # Valid records
-    valid_df = all_data[all_data["Error"] == ""]
+    valid_df = all_data[
+        all_data["Error"] == ""
+    ]
 
     # Aggregation
-    final_df = valid_df.groupby([
-        "PAN No",
-        "Beneficiary Country Code",
-        "Currency Code"
-    ], as_index=False).agg({
+    final_df = valid_df.groupby(
+        [
+            "PAN No",
+            "Beneficiary Country Code",
+            "Currency Code"
+        ],
+        as_index=False
+    ).agg({
         "Name Remitter": "first",
         "Aadhaar": "first",
         "Remittance Date": "first",
@@ -147,4 +156,21 @@ def process_files(dcard_file, lrs_file, upi_file):
         "Remarks": "first"
     })
 
+    # Ensure exact RBI column order
+    final_df = final_df[
+        [
+            "PAN No",
+            "Name Remitter",
+            "Aadhaar",
+            "Beneficiary Country Code",
+            "Remittance Date",
+            "Purpose Code",
+            "Currency Code",
+            "Eq USD Amount",
+            "Remarks"
+        ]
+    ]
+
     return final_df, error_df
+
+

@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 from etl import process_files
-from io import BytesIO 
+from io import BytesIO
+
 # ---------------- PAGE CONFIG ----------------
 
 st.set_page_config(
@@ -79,35 +80,30 @@ if st.button("Generate RBI Report"):
 
         st.success("ETL Processing Completed Successfully.")
 
-        # ---------------- FINAL FILE ----------------
+        # ---------------- COMBINED EXCEL FILE ----------------
 
-        final_buffer = BytesIO()
+        output_buffer = BytesIO()
 
-        with pd.ExcelWriter(final_buffer, engine='openpyxl') as writer:
-            final_df.to_excel(writer, index=False)
+        with pd.ExcelWriter(output_buffer, engine="openpyxl") as writer:
 
-        final_buffer.seek(0)
+            final_df.to_excel(
+                writer,
+                sheet_name="RBI Final Report",
+                index=False
+            )
 
-        st.download_button(
-            label="Download RBI Final File",
-            data=final_buffer,
-            file_name="RBI_FINAL.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+            error_df.to_excel(
+                writer,
+                sheet_name="Error Report",
+                index=False
+            )
 
-        # ---------------- ERROR FILE ----------------
-
-        error_buffer = BytesIO()
-
-        with pd.ExcelWriter(error_buffer, engine='openpyxl') as writer:
-            error_df.to_excel(writer, index=False)
-
-        error_buffer.seek(0)
+        output_buffer.seek(0)
 
         st.download_button(
-            label="Download Error Report",
-            data=error_buffer,
-            file_name="ERROR_REPORT.xlsx",
+            label="Download RBI Report",
+            data=output_buffer,
+            file_name="RBI_REPORT.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
@@ -119,3 +115,6 @@ if st.button("Generate RBI Report"):
 
     else:
         st.error("Please upload all 3 files.")
+        
+        
+        
