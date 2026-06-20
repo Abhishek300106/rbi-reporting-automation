@@ -18,48 +18,27 @@ STANDARD_COLUMNS = [
 
 COLUMN_MAPPING = {
 
-    # PAN
-    "PAN No": "PAN No",
-    "PAN Number": "PAN No",
-    "pan remitter": "PAN No",
+# UPI FILE
 
-    # NAME
-    "Name Remitter": "Name Remitter",
-    "Customer name": "Name Remitter",
-    "name remitter": "Name Remitter",
+"PAN_REMITTER": "PAN No",
+"NAME_REMITTER": "Name Remitter",
+"BENEFICIARY_COUNTRY_CODE": "Beneficiary Country Code",
+"DATE_REMITTANCE": "Remittance Date",
+"PURPOSE_CODE": "Purpose Code",
+"CURRENCY_CODE": "Currency Code",
+"USD_AMOUNT": "Eq USD Amount",
+"REMARKS": "Remarks",
 
-    # AADHAAR
-    "Aadhar": "Aadhaar",
-    "Aadhar NO": "Aadhaar",
+# DCARD VARIATIONS
 
-    # COUNTRY
-    "Beneficiary Country Code": "Beneficiary Country Code",
-    "Other party country code": "Beneficiary Country Code",
-    "beneficiary_country_code": "Beneficiary Country Code",
+"PAN no": "PAN No",
+"Name Remmiter": "Name Remitter",
+"AAdhar": "Aadhaar",
+"Eq.USD Amount": "Eq USD Amount",
 
-    # DATE
-    "Remittance Date": "Remittance Date",
-    "Bill Date": "Remittance Date",
-    "date_remittance": "Remittance Date",
+# LRS VARIATIONS
 
-    # PURPOSE
-    "Purpose Code": "Purpose Code",
-    "Purpose": "Purpose Code",
-    "purpose": "Purpose Code",
-
-    # CURRENCY
-    "Currency Code": "Currency Code",
-    "Crncy": "Currency Code",
-    "currency code": "Currency Code",
-
-    # USD AMOUNT
-    "Eq.USD": "Eq USD Amount",
-    "Bill Amount USD": "Eq USD Amount",
-    "usd amount": "Eq USD Amount",
-
-    # REMARKS
-    "Remarks": "Remarks",
-    "remarks": "Remarks"
+"Other Party country Code": "Beneficiary Country Code",
 }
 
 # ---------------- STANDARDIZE FUNCTION ----------------
@@ -93,13 +72,14 @@ def validate_row(row):
 
     errors = []
 
-    # Missing Currency
-    if pd.isna(row["Currency Code"]) or row["Currency Code"] == "":
-        errors.append("MISSING_CURRENCY")
+    pan = str(row["PAN No"]).strip()
+    currency = str(row["Currency Code"]).strip()
 
-    # Missing PAN
-    if pd.isna(row["PAN No"]) or row["PAN No"] == "":
+    if pan == "" or pan.lower() == "nan":
         errors.append("MISSING_PAN")
+
+    if currency == "" or currency.lower() == "nan":
+        errors.append("MISSING_CURRENCY")
 
     return ", ".join(errors)
 
